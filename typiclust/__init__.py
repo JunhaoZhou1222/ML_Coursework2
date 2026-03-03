@@ -12,7 +12,7 @@ from .config import SEED, DEVICE, set_seed
 from .pipeline import run_typiclust_rp
 from .models import SimCLREncoder, ResNet18Classifier, NTXentLoss
 from .selection import typiclust_rp_select
-from .typicality import compute_typicality
+from .typicality import compute_typicality, compute_typicality_per_cluster
 from .embeddings import extract_embeddings
 from .train import train_simclr, train_classifier
 
@@ -26,6 +26,7 @@ __all__ = [
     "NTXentLoss",
     "typiclust_rp_select",
     "compute_typicality",
+    "compute_typicality_per_cluster",
     "extract_embeddings",
     "train_simclr",
     "train_classifier",

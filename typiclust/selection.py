@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.cluster import KMeans, MiniBatchKMeans
 
 from .config import SEED
-from .typicality import compute_typicality
+from .typicality import compute_typicality_per_cluster
 
 
 def typiclust_rp_select(
@@ -56,8 +56,10 @@ def typiclust_rp_select(
         )
     cluster_ids = km.fit_predict(embeddings)
 
-    print(f"\n=== Step 3: Computing typicality for all {len(embeddings)} points ===")
-    typicality = compute_typicality(embeddings, K=K_typicality)
+    print(f"\n=== Step 3: Computing typicality (per-cluster K_eff=min({K_typicality}, cluster_size)) ===")
+    typicality = compute_typicality_per_cluster(
+        embeddings, cluster_ids, K=K_typicality
+    )
 
     covered_clusters = set()
     for idx in existing_labeled_indices:
@@ -65,6 +67,8 @@ def typiclust_rp_select(
 
     cluster_map = {}
     for i in range(len(embeddings)):
+        if np.isnan(typicality[i]):
+            continue
         cid = cluster_ids[i]
         if cid not in cluster_map:
             cluster_map[cid] = []
@@ -93,19 +97,8 @@ def typiclust_rp_select(
         best_idx = max(valid_pts, key=lambda x: x[0])[1]
         query_indices.append(best_idx)
 
+    # 论文仅允许从「B 个最大未覆盖簇」各选一个，不做全局典型性兜底，以保持多样性
     if len(query_indices) < budget:
-        already_selected = set(query_indices) | existing_set
-        remaining = sorted(
-            [
-                (typicality[i], i)
-                for i in range(len(embeddings))
-                if i not in already_selected
-            ],
-            reverse=True,
-        )
-        for _, idx in remaining:
-            if len(query_indices) >= budget:
-                break
-            query_indices.append(idx)
+        print(f"  Warning: Only {len(query_indices)}/{budget} selected (not enough large uncovered clusters).")
 
     return query_indices[:budget]
