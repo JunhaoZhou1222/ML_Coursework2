@@ -1,11 +1,9 @@
-"""
-下游分类器：ResNet-18 全监督。
-"""
 import torch.nn as nn
 import torchvision
 
 
 class ResNet18Classifier(nn.Module):
+    #estimate acc in test
     def __init__(self, num_classes: int = 10):
         super().__init__()
         resnet = torchvision.models.resnet18(weights=None)

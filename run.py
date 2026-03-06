@@ -1,9 +1,6 @@
 """
-TPC_RP 入口脚本。
 
-Demo：5 轮主动学习，每轮预算 B=10。
-论文附录 F.1：SimCLR 500 epoch、分类器 200 epoch；完整复现请用下方注释参数。
-快速测试建议至少 simclr_epochs=50, classifier_epochs=100（10 epoch 的 SimCLR 几乎随机，结果无意义）。
+Demo:5 epoches AL,  Budget=10。
 """
 from typiclust import run_typiclust_rp
 from typiclust.config import DEVICE

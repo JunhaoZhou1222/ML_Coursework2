@@ -42,6 +42,14 @@ def train_classifier(
         download=False,
         transform=train_transform,
     )
+
+    full_train_eval = torchvision.datasets.CIFAR10(
+        root=dataset_root,
+        train=True,
+        download=False,
+        transform=test_transform,
+    )
+
     test_set = torchvision.datasets.CIFAR10(
         root=dataset_root,
         train=False,
@@ -67,7 +75,7 @@ def train_classifier(
         train_indices = [labeled_indices[i] for i in train_idx]
         val_indices = [labeled_indices[i] for i in val_idx]
         train_set = Subset(full_train, train_indices)
-        val_set = Subset(full_train, val_indices)
+        val_set = Subset(full_train_eval, val_indices)
         train_loader = DataLoader(
             train_set,
             batch_size=min(batch_size, len(train_indices)),

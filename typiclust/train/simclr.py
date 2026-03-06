@@ -1,6 +1,3 @@
-"""
-SimCLR 无监督预训练（TypiClust 第一步）。
-"""
 import torch
 import torchvision
 from torch.utils.data import DataLoader
@@ -12,21 +9,15 @@ from ..transforms import SimCLRTransform
 
 def train_simclr(
     dataset_root: str = "./data",
-    epochs: int = 50,
+    epochs: int = 50, 
     batch_size: int = 256,
     lr: float = 0.5,
     temperature: float = 0.5,
     projection_dim: int = 128,
 ) -> SimCLREncoder:
-    """
-    在完整（无标签）CIFAR-10 训练池上训练 SimCLR。
-
-    Returns
-    -------
-    训练好的编码器。
-    """
+    
     print("\n=== Step 1: Training SimCLR Encoder ===")
-
+    #Load data
     train_dataset = torchvision.datasets.CIFAR10(
         root=dataset_root,
         train=True,
@@ -47,13 +38,13 @@ def train_simclr(
         model.parameters(),
         lr=lr,
         momentum=0.9,
-        weight_decay=1e-4,
-        nesterov=True,
+        weight_decay=1e-4, #L2 norm
+        nesterov=True, #faster than normal
     )
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer,
         T_max=epochs,
-        eta_min=0,
+        eta_min=0, #min lr
     )
     criterion = NTXentLoss(temperature=temperature)
 
@@ -66,10 +57,10 @@ def train_simclr(
             _, z2 = model(x2)
             loss = criterion(z1, z2)
             optimizer.zero_grad()
-            loss.backward()
+            loss.backward() # Calculate grad
             optimizer.step()
             total_loss += loss.item()
-        scheduler.step()
+        scheduler.step() #update rate
         avg = total_loss / len(loader)
         if epoch % 10 == 0 or epoch == 1:
             print(f"  Epoch [{epoch:3d}/{epochs}]  Loss: {avg:.4f}")

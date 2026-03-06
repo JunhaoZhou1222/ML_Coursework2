@@ -12,7 +12,7 @@ from .typicality import compute_typicality_per_cluster
 
 def typiclust_rp_select(
     embeddings: np.ndarray,
-    budget: int,
+    budget: int,  
     max_clusters: int = 500,
     existing_labeled_indices: Optional[List[int]] = None,
     K_typicality: int = 20,
@@ -37,14 +37,16 @@ def typiclust_rp_select(
     -------
     query_indices : list[int]  选中的 B 个样本索引
     """
+    # First round, no labels
     if existing_labeled_indices is None:
         existing_labeled_indices = []
 
     n_existing = len(existing_labeled_indices)
-    n_clusters = min(n_existing + budget, max_clusters)
-    n_clusters = max(n_clusters, budget)
+    n_clusters = min(n_existing + budget, max_clusters) #clusters = existedlabel + B
+    #n_clusters = max(n_clusters, budget)
 
     print(f"\n=== Step 2: K-means clustering into {n_clusters} clusters ===")
+    #In paper, it used KMeans when K ≤ 50 and MiniBatchKMeans otherwise.
     if n_clusters <= 50:
         km = KMeans(n_clusters=n_clusters, random_state=SEED, n_init=10)
     else:
@@ -54,13 +56,13 @@ def typiclust_rp_select(
             batch_size=1024,
             n_init=3,
         )
-    cluster_ids = km.fit_predict(embeddings)
+    cluster_ids = km.fit_predict(embeddings) #cluster_ids = [0, 2, 0, 1, 2, ...]
 
     print(f"\n=== Step 3: Computing typicality (per-cluster K_eff=min({K_typicality}, cluster_size)) ===")
     typicality = compute_typicality_per_cluster(
         embeddings, cluster_ids, K=K_typicality
     )
-
+    # clusters with labeled sample = covered clusters
     covered_clusters = set()
     for idx in existing_labeled_indices:
         covered_clusters.add(cluster_ids[idx])
@@ -77,9 +79,9 @@ def typiclust_rp_select(
     uncovered = [
         (cid, pts)
         for cid, pts in cluster_map.items()
-        if cid not in covered_clusters
+        if cid not in covered_clusters # clusters with unlabeled sample
     ]
-    uncovered.sort(key=lambda x: len(x[1]), reverse=True)
+    uncovered.sort(key=lambda x: len(x[1]), reverse=True) # rank from high density to low
 
     print(f"  Covered clusters   : {len(covered_clusters)}")
     print(f"  Uncovered clusters : {len(uncovered)}")
@@ -92,12 +94,11 @@ def typiclust_rp_select(
         if len(query_indices) >= budget:
             break
         valid_pts = [(t, idx) for t, idx in pts if idx not in existing_set]
-        if len(valid_pts) < MIN_CLUSTER_SIZE:
+        if len(valid_pts) < MIN_CLUSTER_SIZE: # the number of sample is not enough
             continue
         best_idx = max(valid_pts, key=lambda x: x[0])[1]
         query_indices.append(best_idx)
 
-    # 论文仅允许从「B 个最大未覆盖簇」各选一个，不做全局典型性兜底，以保持多样性
     if len(query_indices) < budget:
         print(f"  Warning: Only {len(query_indices)}/{budget} selected (not enough large uncovered clusters).")
 

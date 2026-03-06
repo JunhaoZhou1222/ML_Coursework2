@@ -1,4 +1,4 @@
-# CIFAR-10 数据集（超过 100MB，不宜 push）
+# CIFAR-10
 data/
 
 # Python
@@ -23,13 +23,13 @@ wheels/
 .installed.cfg
 *.egg
 
-# 虚拟环境
+#env
 .venv/
 venv/
 ENV/
 env/
 
-# IDE / 编辑器
+# IDE
 .idea/
 .vscode/
 *.swp
@@ -39,6 +39,5 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 
-# 系统
 .DS_Store
 Thumbs.db

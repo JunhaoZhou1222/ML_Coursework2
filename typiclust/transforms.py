@@ -21,7 +21,7 @@ class SimCLRTransform:
         ])
 
     def __call__(self, x):
-        return self.transform(x), self.transform(x)
+        return self.transform(x), self.transform(x) #对同一张图生成两个不同的增强版本
 
 
 class StandardTransform:

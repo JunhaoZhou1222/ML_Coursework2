@@ -1,10 +1,6 @@
-"""
-SimCLR 编码器：ResNet-18 骨干 + 投影头。
-"""
 import torch
 import torch.nn as nn
 import torchvision
-
 
 class SimCLREncoder(nn.Module):
     """
@@ -17,7 +13,8 @@ class SimCLREncoder(nn.Module):
         resnet = torchvision.models.resnet18(weights=None)
         resnet.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         resnet.maxpool = nn.Identity()
-        self.backbone = nn.Sequential(*list(resnet.children())[:-1])
+        #把 ResNet-18 除了最后一层（分类层 fc）之外的所有层打包成 backbone。
+        self.backbone = nn.Sequential(*list(resnet.children())[:-1]) 
 
         self.projection_head = nn.Sequential(
             nn.Linear(512, 512),

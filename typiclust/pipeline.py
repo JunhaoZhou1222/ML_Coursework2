@@ -1,6 +1,3 @@
-"""
-TPC_RP 完整流程：SimCLR → 嵌入 → 聚类 + 典型性选择 → 分类器训练与评估。
-"""
 import numpy as np
 
 from .embeddings import extract_embeddings
@@ -12,16 +9,12 @@ def run_typiclust_rp(
     dataset_root: str = "./data",
     budget_per_round: int = 10,
     num_rounds: int = 5,
-    simclr_epochs: int = 50,
+    simclr_epochs: int = 50, #50 for test
     classifier_epochs: int = 100,
     max_clusters: int = 500,
     K_typicality: int = 20,
 ):
-    """
-    CIFAR-10 上的完整 TPC_RP 流程。
-
-    Round 0 = 初始池选择（L0 为空），之后每轮增加 B 个样本。
-    """
+    
     print("=" * 60)
     print("  TPC_RP: TypiClust with SimCLR + K-means on CIFAR-10")
     print("=" * 60)
@@ -41,6 +34,7 @@ def run_typiclust_rp(
     )
     print(f"  Embeddings shape: {embeddings.shape}")
 
+    #Active learning loop
     labeled_indices = []
     results = []
 
@@ -52,7 +46,7 @@ def run_typiclust_rp(
 
         new_queries = typiclust_rp_select(
             embeddings=embeddings,
-            budget=budget_per_round,
+            budget=budget_per_round, #Add 10 labels each round
             max_clusters=max_clusters,
             existing_labeled_indices=labeled_indices,
             K_typicality=K_typicality,
@@ -72,7 +66,7 @@ def run_typiclust_rp(
             labeled_indices=labeled_indices,
             dataset_root=dataset_root,
             epochs=classifier_epochs,
-            batch_size=min(64, total_budget),
+            batch_size=min(64, total_budget), #Prevent batch_size more than number of samples
             lr=0.025,
         )
         results.append({
@@ -80,7 +74,7 @@ def run_typiclust_rp(
             "budget": total_budget,
             "test_accuracy": acc,
         })
-        print(f"  ✓ Test Accuracy: {acc:.2f}%")
+        print(f"Test Accuracy: {acc:.2f}%")
 
     print("\n" + "=" * 60)
     print("  TPC_RP Results Summary")
