@@ -6,19 +6,20 @@ from .train import train_simclr, train_classifier
 
 
 def run_typiclust_rp(
-    dataset_root: str = "./data",
-    budget_per_round: int = 10,
-    num_rounds: int = 5,
-    simclr_epochs: int = 50, #50 for test
-    classifier_epochs: int = 100,
-    max_clusters: int = 500,
-    K_typicality: int = 20,
+    dataset_root = "./data",
+    budget_per_round = 10,
+    num_rounds = 5,
+    simclr_epochs = 50, #50 for test
+    classifier_epochs= 100,
+    max_clusters = 500,
+    K_typicality = 20,
 ):
     
     print("=" * 60)
     print("  TPC_RP: TypiClust with SimCLR + K-means on CIFAR-10")
     print("=" * 60)
-
+    
+    # self-supervised learning
     encoder = train_simclr(
         dataset_root=dataset_root,
         epochs=simclr_epochs,
@@ -27,6 +28,7 @@ def run_typiclust_rp(
         temperature=0.5,
         projection_dim=128,
     )
+    # Extract embeddings
     embeddings, true_labels = extract_embeddings(
         encoder,
         dataset_root=dataset_root,

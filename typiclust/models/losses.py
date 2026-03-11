@@ -4,11 +4,11 @@ import torch.nn.functional as F
 
 
 class NTXentLoss(nn.Module):
-    def __init__(self, temperature: float = 0.5):
+    def __init__(self, temperature = 0.5):
         super().__init__()
         self.temperature = temperature
 
-    def forward(self, z1: torch.Tensor, z2: torch.Tensor) -> torch.Tensor:
+    def forward(self, z1, z2):
         # l2 Normalization
         B = z1.size(0)
         # Set all vector lengths to 1
@@ -23,7 +23,6 @@ class NTXentLoss(nn.Module):
 
         labels = torch.cat([
             torch.arange(B, 2 * B), # eg. [4, 5, 6, 7]
-            torch.arange(0, B), # eg. [0, 1, 2, 3]
-        ]).to(z.device) # labels = [4, 5, 6, 7, 0, 1, 2, 3]
+            torch.arange(0, B)]).to(z.device)# eg. [0, 1, 2, 3]  labels = [4, 5, 6, 7, 0, 1, 2, 3]
 
         return F.cross_entropy(sim, labels)

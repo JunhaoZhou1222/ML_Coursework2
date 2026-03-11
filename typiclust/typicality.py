@@ -8,7 +8,7 @@ from sklearn.neighbors import NearestNeighbors
 
 def compute_typicality(embeddings: np.ndarray, K: int = 20) -> np.ndarray:
     """
-    从全部50000张图里找最近的20张
+    find the nearst 20 points
     """
     nbrs = NearestNeighbors(
         n_neighbors=min(K + 1, len(embeddings)),
@@ -24,14 +24,14 @@ def compute_typicality(embeddings: np.ndarray, K: int = 20) -> np.ndarray:
 
 
 def compute_typicality_per_cluster(
-    embeddings: np.ndarray,
-    cluster_ids: np.ndarray,
-    K: int = 20,
-) -> np.ndarray:
+    embeddings,
+    cluster_ids,
+    K = 20,
+):
     """
     只在自己的簇里找邻居
     """
-    typicality = np.full(embeddings.shape[0], np.nan, dtype=np.float64)
+    typicality = np.full(len(embeddings), np.nan)
     for cid in np.unique(cluster_ids):
         # 找出属于当前簇 cid 的所有样本
         mask = cluster_ids == cid

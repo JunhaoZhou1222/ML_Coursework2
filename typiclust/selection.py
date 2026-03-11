@@ -1,5 +1,8 @@
 """
-TPC_RP 核心：基于 K-means + 典型性的主动学习样本选择。
+TypiClust sample selection (Algorithm 1 from the paper):
+  1. K-means clustering on embeddings
+  2. Mark clusters that already contain a labeled sample as "covered"
+  3. From the B largest uncovered clusters, pick the most typical sample each
 """
 from typing import List, Optional
 
@@ -11,36 +14,17 @@ from .typicality import compute_typicality_per_cluster
 
 
 def typiclust_rp_select(
-    embeddings: np.ndarray,
-    budget: int,  
-    max_clusters: int = 500,
-    existing_labeled_indices: Optional[List[int]] = None,
-    K_typicality: int = 20,
-) -> List[int]:
-    """
-    论文 Algorithm 1：TypiClust 初始池选择（TPC_RP 变体）。
-
-    步骤：
-    1. K-means 聚类为 min(|L_{i-1}| + B, max_clusters) 类
-    2. 标记已被已有标签覆盖的簇
-    3. 从 B 个最大未覆盖簇中各选一个最典型样本
-
-    Parameters
-    ----------
-    embeddings               : np.ndarray (N, D)
-    budget                   : int  B，本轮查询数量
-    max_clusters             : int  簇数上界（论文 CIFAR 用 500）
-    existing_labeled_indices : list[int] | None  已标注索引 L_{i-1}
-    K_typicality             : int  典型性计算的 K
-
-    Returns
-    -------
-    query_indices : list[int]  选中的 B 个样本索引
-    """
+    embeddings,
+    budget,  
+    max_clusters = 500,
+    existing_labeled_indices = None,
+    K_typicality = 20,
+):
     # First round, no labels
     if existing_labeled_indices is None:
         existing_labeled_indices = []
 
+    # K-means clustetring
     n_existing = len(existing_labeled_indices)
     n_clusters = min(n_existing + budget, max_clusters) #clusters = existedlabel + B
     #n_clusters = max(n_clusters, budget)
@@ -58,15 +42,14 @@ def typiclust_rp_select(
         )
     cluster_ids = km.fit_predict(embeddings) #cluster_ids = [0, 2, 0, 1, 2, ...]
 
+    # caclulate typicality
     print(f"\n=== Step 3: Computing typicality (per-cluster K_eff=min({K_typicality}, cluster_size)) ===")
     typicality = compute_typicality_per_cluster(
         embeddings, cluster_ids, K=K_typicality
     )
     # clusters with labeled sample = covered clusters
-    covered_clusters = set()
-    for idx in existing_labeled_indices:
-        covered_clusters.add(cluster_ids[idx])
-
+    covered_clusters = {cluster_ids[idx] for idx in existing_labeled_indices}
+    
     cluster_map = {}
     for i in range(len(embeddings)):
         if np.isnan(typicality[i]):

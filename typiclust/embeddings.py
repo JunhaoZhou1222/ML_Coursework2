@@ -12,9 +12,9 @@ from .config import DEVICE, NUM_WORKERS
 @torch.no_grad()
 def extract_embeddings(
     model: SimCLREncoder,
-    dataset_root: str = "./data",
-    batch_size: int = 512,
-) -> Tuple[np.ndarray, np.ndarray]:
+    dataset_root = "./data",
+    batch_size = 512
+):
 
     dataset = torchvision.datasets.CIFAR10(
         root=dataset_root,

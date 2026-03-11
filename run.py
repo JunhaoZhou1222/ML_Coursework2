@@ -1,5 +1,4 @@
 """
-
 Demo:5 epoches AL,  Budget=10。
 """
 from typiclust import run_typiclust_rp

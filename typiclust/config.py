@@ -16,7 +16,7 @@ def set_seed(seed: int = SEED) -> None:
 set_seed(SEED)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+#DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps")
 NUM_WORKERS = 0 if os.name == 'nt' else 2
 
 CIFAR10_MEAN = (0.4914, 0.4822, 0.4465)

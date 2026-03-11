@@ -8,13 +8,13 @@ from ..transforms import SimCLRTransform
 from ..config import NUM_WORKERS
 
 def train_simclr(
-    dataset_root: str = "./data",
-    epochs: int = 50, 
-    batch_size: int = 256,
-    lr: float = 0.5,
-    temperature: float = 0.5,
-    projection_dim: int = 128,
-) -> SimCLREncoder:
+    dataset_root = "./data",
+    epochs = 50, 
+    batch_size = 256,
+    lr = 0.5,
+    temperature = 0.5,
+    projection_dim = 128
+):
     
     print("\n=== Step 1: Training SimCLR Encoder ===")
     #Load data
@@ -29,7 +29,7 @@ def train_simclr(
         batch_size=batch_size,
         shuffle=True,
         num_workers=NUM_WORKERS,
-        pin_memory=True,
+        pin_memory = True,
         drop_last=True,
     )
 

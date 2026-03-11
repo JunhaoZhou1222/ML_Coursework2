@@ -3,17 +3,12 @@ import torch.nn as nn
 import torchvision
 
 class SimCLREncoder(nn.Module):
-    """
-    ResNet-18 骨干 + 2 层 MLP 投影头。
-    倒数第二层（512 维）作为嵌入空间。
-    """
-
-    def __init__(self, projection_dim: int = 128):
+    def __init__(self, projection_dim = 128):
         super().__init__()
         resnet = torchvision.models.resnet18(weights=None)
         resnet.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         resnet.maxpool = nn.Identity()
-        #把 ResNet-18 除了最后一层（分类层 fc）之外的所有层打包成 backbone。
+        #everything except the fc layer
         self.backbone = nn.Sequential(*list(resnet.children())[:-1]) 
 
         self.projection_head = nn.Sequential(
