@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 
 from ..config import CIFAR10_MEAN, CIFAR10_STD, DEVICE
 from ..models import ResNet18Classifier
-
+from ..config import NUM_WORKERS
 
 def train_classifier(
     labeled_indices: list[int],
@@ -80,13 +80,13 @@ def train_classifier(
             train_set,
             batch_size=min(batch_size, len(train_indices)),
             shuffle=True,
-            num_workers=2,
+            num_workers=NUM_WORKERS,
         )
         val_loader = DataLoader(
             val_set,
             batch_size=min(256, len(val_indices)),
             shuffle=False,
-            num_workers=2,
+            num_workers=NUM_WORKERS,
         )
         use_val = True
     else:
@@ -95,7 +95,7 @@ def train_classifier(
             labeled_set,
             batch_size=min(batch_size, n_labeled),
             shuffle=True,
-            num_workers=2,
+            num_workers=NUM_WORKERS,
         )
         val_loader = None
         use_val = False
@@ -104,7 +104,7 @@ def train_classifier(
         test_set,
         batch_size=256,
         shuffle=False,
-        num_workers=2,
+        num_workers=NUM_WORKERS,
     )
 
     model = ResNet18Classifier(num_classes=10).to(DEVICE)

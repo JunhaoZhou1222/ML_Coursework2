@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from ..config import DEVICE
 from ..models import SimCLREncoder, NTXentLoss
 from ..transforms import SimCLRTransform
-
+from ..config import NUM_WORKERS
 
 def train_simclr(
     dataset_root: str = "./data",
@@ -28,7 +28,7 @@ def train_simclr(
         train_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=2,
+        num_workers=NUM_WORKERS,
         pin_memory=True,
         drop_last=True,
     )

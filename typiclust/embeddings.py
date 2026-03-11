@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from .config import DEVICE
 from .models import SimCLREncoder
 from .transforms import StandardTransform
-
+from .config import DEVICE, NUM_WORKERS
 
 @torch.no_grad()
 def extract_embeddings(
@@ -26,7 +26,7 @@ def extract_embeddings(
         dataset,
         batch_size=batch_size,
         shuffle=False,
-        num_workers=2,
+        num_workers=NUM_WORKERS,
     )
 
     model.eval()
