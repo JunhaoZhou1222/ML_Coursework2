@@ -15,12 +15,12 @@ from ..config import NUM_WORKERS
 
 def train_classifier(
     labeled_indices: list[int],
-    dataset_root: str = "./data",
-    epochs: int = 100,
-    batch_size: int = 64,
-    lr: float = 0.025,
-    val_ratio: float = 0.2,
-) -> float:
+    dataset_root = "./data",
+    epochs = 100,
+    batch_size = 64,
+    lr = 0.025,
+    val_ratio = 0.2,
+):
     """
     在已标注子集上训练 ResNet-18：按 val_ratio 划分验证集，保存验证集最优模型，
     最后用该 checkpoint 在测试集上评估并返回准确率（%）。

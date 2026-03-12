@@ -10,8 +10,8 @@ from ..config import NUM_WORKERS
 def train_simclr(
     dataset_root = "./data",
     epochs = 50, 
-    batch_size = 256,
-    lr = 0.5,
+    batch_size = 512,
+    lr = 0.4,
     temperature = 0.5,
     projection_dim = 128
 ):
@@ -62,7 +62,7 @@ def train_simclr(
             total_loss += loss.item()
         scheduler.step() #update rate
         avg = total_loss / len(loader)
-        if epoch % 10 == 0 or epoch == 1:
-            print(f"  Epoch [{epoch:3d}/{epochs}]  Loss: {avg:.4f}")
+
+        print(f"  Epoch [{epoch:3d}/{epochs}]  Loss: {avg:.4f}")
 
     return model
