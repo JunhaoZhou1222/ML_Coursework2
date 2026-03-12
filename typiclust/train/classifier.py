@@ -1,6 +1,8 @@
 """
-下游 ResNet-18 分类器训练与评估。
-训练时用验证集选最优 checkpoint，最终在测试集上报告最优模型的准确率。
+- ResNet-18 trained on the labeled set
+- SGD with 0.9 momentum and Nesterov momentum
+- Initial learning rate 0.025, cosine scheduler
+- Augmentations: random crops and horizontal flips
 """
 import torch
 import torch.nn as nn
@@ -22,12 +24,26 @@ def train_classifier(
     val_ratio = 0.2,
 ):
     """
-    在已标注子集上训练 ResNet-18：按 val_ratio 划分验证集，保存验证集最优模型，
-    最后用该 checkpoint 在测试集上评估并返回准确率（%）。
+    Train a fresh ResNet-18 on `labeled_indices`
+
+    Optimizations over baseline paper reproduction:
+      - [Opt 2] Low budget (< 20 labels): skip val split, train longer (200 epochs)
+      - [Opt 3] AutoAugment for stronger data augmentation
+      - [Opt 4] Label smoothing (0.1) to reduce overconfidence
     """
+
+    # When n_labeled < 20, validation set (2-4 samples) is pure noise.
+    # Skip val split and train longer instead.
+    n_labeled = len(labeled_indices)
+    if n_labeled < 20:
+        val_ratio = 0.0
+        epochs = 200
+
+    # Low budget benefits greatly from stronger augmentation to reduce overfitting
     train_transform = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
+        transforms.AutoAugment(transforms.AutoAugmentPolicy.CIFAR10),
         transforms.ToTensor(),
         transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD),
     ])
@@ -58,8 +74,11 @@ def train_classifier(
     )
 
     # 标注样本过少时不划分验证集，全部用于训练
-    n_labeled = len(labeled_indices)
-    if n_labeled >= 5 and val_ratio > 0:
+    #n_labeled = len(labeled_indices)
+    #if n_labeled >= 5 and val_ratio > 0:
+        #labels = [full_train[i][1] for i in labeled_indices]
+    use_val = n_labeled >= 20 and val_ratio > 0
+    if use_val:
         labels = [full_train[i][1] for i in labeled_indices]
         try:
             train_idx, val_idx = train_test_split(
@@ -72,10 +91,13 @@ def train_classifier(
             train_idx, val_idx = train_test_split(
                 range(n_labeled), test_size=val_ratio, random_state=42
             )
+
         train_indices = [labeled_indices[i] for i in train_idx]
         val_indices = [labeled_indices[i] for i in val_idx]
+
         train_set = Subset(full_train, train_indices)
         val_set = Subset(full_train_eval, val_indices)
+
         train_loader = DataLoader(
             train_set,
             batch_size=min(batch_size, len(train_indices)),
@@ -120,7 +142,7 @@ def train_classifier(
         T_max=epochs,
         eta_min=0,
     )
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
 
     best_val_acc = -1.0
     best_state = None
