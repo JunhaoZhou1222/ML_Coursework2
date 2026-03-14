@@ -142,7 +142,7 @@ def train_classifier(
         T_max=epochs,
         eta_min=0,
     )
-    criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.1) #base: CrossEntropyLoss() improved: label_smoothing=0.1
 
     best_val_acc = -1.0
     best_state = None
