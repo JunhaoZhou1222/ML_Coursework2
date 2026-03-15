@@ -73,7 +73,8 @@ def train_classifier(
         transform=test_transform,
     )
 
-    # 标注样本过少时不划分验证集，全部用于训练
+    # all for training if number of labels not enough
+    
     #n_labeled = len(labeled_indices)
     #if n_labeled >= 5 and val_ratio > 0:
         #labels = [full_train[i][1] for i in labeled_indices]
