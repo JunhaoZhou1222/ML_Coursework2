@@ -23,8 +23,8 @@ def run_typiclust_rp(
     encoder = train_simclr(
         dataset_root=dataset_root,
         epochs=simclr_epochs,
-        batch_size=256,
-        lr=0.5,
+        batch_size=512,
+        lr=0.4,
         temperature=0.5,
         projection_dim=128,
     )

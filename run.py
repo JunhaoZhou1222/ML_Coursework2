@@ -11,8 +11,8 @@ if __name__ == "__main__":
         dataset_root="./data",
         budget_per_round=10,
         num_rounds=5,
-        simclr_epochs=200,       # 快速测试；完整复现用 500
-        classifier_epochs=50,  # 完整复现用 200
-        max_clusters=50,
+        simclr_epochs=500,       # 快速测试；完整复现用 500
+        classifier_epochs=200,  # 完整复现用 200
+        max_clusters=500,
         K_typicality=20,
     )

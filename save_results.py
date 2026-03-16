@@ -35,7 +35,7 @@ FULL = "--full" in flags
 
 # Defaults
 EPOCHS = 500 if FULL else 20
-CLS_EPOCHS = 100 if FULL else 50
+CLS_EPOCHS = 200 if FULL else 50
 MAX_K = 500 if FULL else 50
 BUDGET = 10
 ROUNDS = 5

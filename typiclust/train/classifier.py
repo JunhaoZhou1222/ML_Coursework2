@@ -43,7 +43,7 @@ def train_classifier(
     train_transform = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
-        transforms.AutoAugment(transforms.AutoAugmentPolicy.CIFAR10),
+        #transforms.AutoAugment(transforms.AutoAugmentPolicy.CIFAR10),
         transforms.ToTensor(),
         transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD),
     ])
@@ -74,13 +74,13 @@ def train_classifier(
     )
 
     # all for training if number of labels not enough
-    
-    #n_labeled = len(labeled_indices)
-    #if n_labeled >= 5 and val_ratio > 0:
-        #labels = [full_train[i][1] for i in labeled_indices]
-    use_val = n_labeled >= 20 and val_ratio > 0
-    if use_val:
+
+    n_labeled = len(labeled_indices)
+    if n_labeled >= 5 and val_ratio > 0:
         labels = [full_train[i][1] for i in labeled_indices]
+    #use_val = n_labeled >= 20 and val_ratio > 0
+    #if use_val:
+        #labels = [full_train[i][1] for i in labeled_indices]
         try:
             train_idx, val_idx = train_test_split(
                 range(n_labeled),
@@ -143,7 +143,7 @@ def train_classifier(
         T_max=epochs,
         eta_min=0,
     )
-    criterion = nn.CrossEntropyLoss(label_smoothing=0.1) #base: CrossEntropyLoss() improved: label_smoothing=0.1
+    criterion = nn.CrossEntropyLoss() #base: CrossEntropyLoss() improved: label_smoothing=0.1
 
     best_val_acc = -1.0
     best_state = None
