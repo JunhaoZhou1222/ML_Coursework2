@@ -9,15 +9,22 @@ import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, Subset
-
+import numpy as np
 from ..config import CIFAR10_MEAN, CIFAR10_STD, DEVICE
 from ..models import ResNet18Classifier
 from ..config import NUM_WORKERS
 
+#def mixup_data(x, y, alpha=0.2):
+    #"""Mix two samples together to create virtual training examples."""
+    #lam = np.random.beta(alpha, alpha) if alpha > 0 else 1.0
+    #index = torch.randperm(x.size(0), device=x.device)
+    #mixed_x = lam * x + (1 - lam) * x[index]
+    #return mixed_x, y, y[index], lam
+
 def train_classifier(
-    labeled_indices: list[int],
+    labeled_indices,
     dataset_root = "./data",
-    epochs = 200,
+    epochs = 200, #300
     batch_size = 64,
     lr = 0.025,
 ):
@@ -90,12 +97,17 @@ def train_classifier(
         T_max=epochs,
         eta_min=0,
     )
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss() #label_smoothing=0.1
 
     for epoch in range(1, epochs + 1):
         model.train()
         for x, y in train_loader:
             x, y = x.to(DEVICE), y.to(DEVICE)
+            # [Opt 3] Mixup: 50% chance
+            #if np.random.rand() < 0.5:
+                #x, ya, yb, lam = mixup_data(x, y)
+                #loss = lam * criterion(model(x), ya) + (1 - lam) * criterion(model(x), yb)
+            #else:
             loss = criterion(model(x), y)
             optimizer.zero_grad()
             loss.backward()
