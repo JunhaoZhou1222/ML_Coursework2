@@ -25,7 +25,7 @@ def run_typiclust_rp(
         epochs=simclr_epochs,
         batch_size=512,
         lr=0.4,
-        temperature=0.5, #temperature=0.5 in paper
+        temperature=0.5, #temperature=0.5 in paper improved:temperature=0.1
         projection_dim=128,
     )
     # Extract embeddings

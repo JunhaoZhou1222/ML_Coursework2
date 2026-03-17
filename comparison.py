@@ -33,5 +33,5 @@ ax.grid(True, alpha=0.3)
 ax.set_xticks(budgets)
 
 plt.tight_layout()
-plt.savefig("results/final_acc_comparison_plot.png", dpi=200)
+plt.savefig("plots/final_acc_comparison_plot.png", dpi=200)
 print("Saved")
