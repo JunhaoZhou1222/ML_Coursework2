@@ -33,7 +33,7 @@ FULL = "--full" in flags
 
 # Defaults
 EPOCHS = 500 if FULL else 20
-CLS_EPOCHS = 200 if FULL else 50
+CLS_EPOCHS = 300 if FULL else 50 #200 for baseline
 MAX_K = 500 if FULL else 50
 BUDGET = 10
 ROUNDS = 5

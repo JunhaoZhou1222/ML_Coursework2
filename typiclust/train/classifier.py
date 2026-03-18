@@ -14,17 +14,17 @@ from ..config import CIFAR10_MEAN, CIFAR10_STD, DEVICE
 from ..models import ResNet18Classifier
 from ..config import NUM_WORKERS
 
-#def mixup_data(x, y, alpha=0.2):
-    #"""Mix two samples together to create virtual training examples."""
-    #lam = np.random.beta(alpha, alpha) if alpha > 0 else 1.0
-    #index = torch.randperm(x.size(0), device=x.device)
-    #mixed_x = lam * x + (1 - lam) * x[index]
-    #return mixed_x, y, y[index], lam
+def mixup_data(x, y, alpha=0.2):
+    """Mix two samples together to create virtual training examples."""
+    lam = np.random.beta(alpha, alpha) if alpha > 0 else 1.0
+    index = torch.randperm(x.size(0), device=x.device)
+    mixed_x = lam * x + (1 - lam) * x[index]
+    return mixed_x, y, y[index], lam
 
 def train_classifier(
     labeled_indices,
     dataset_root = "./data",
-    epochs = 200, #300
+    epochs = 300, #200
     batch_size = 64,
     lr = 0.025,
 ):
@@ -32,9 +32,10 @@ def train_classifier(
     Train a fresh ResNet-18 on `labeled_indices`
 
     Optimizations over baseline paper reproduction:
-      - [Opt 2] Low budget (< 20 labels): skip val split, train longer (200 epochs)
-      - [Opt 3] AutoAugment for stronger data augmentation
-      - [Opt 4] Label smoothing (0.1) to reduce overconfidence
+    - [Opt] Mixup
+    - [Opt] AutoAugment for stronger data augmentation
+    - [Opt] Label smoothing (0.1) to reduce overconfidence
+      
     """
 
     # When n_labeled < 20, validation set (2-4 samples) is pure noise.
@@ -48,7 +49,7 @@ def train_classifier(
     train_transform = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
-        #transforms.AutoAugment(transforms.AutoAugmentPolicy.CIFAR10),
+        transforms.AutoAugment(transforms.AutoAugmentPolicy.CIFAR10),
         transforms.ToTensor(),
         transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD),
     ])
@@ -97,18 +98,20 @@ def train_classifier(
         T_max=epochs,
         eta_min=0,
     )
-    criterion = nn.CrossEntropyLoss() #label_smoothing=0.1
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.1) #label_smoothing=0.1
 
     for epoch in range(1, epochs + 1):
         model.train()
         for x, y in train_loader:
             x, y = x.to(DEVICE), y.to(DEVICE)
             # [Opt 3] Mixup: 50% chance
-            #if np.random.rand() < 0.5:
-                #x, ya, yb, lam = mixup_data(x, y)
-                #loss = lam * criterion(model(x), ya) + (1 - lam) * criterion(model(x), yb)
-            #else:
-            loss = criterion(model(x), y)
+            if np.random.rand() < 0.5:
+                x, ya, yb, lam = mixup_data(x, y)
+                outputs = model(x)
+                loss = lam * criterion(outputs, ya) + (1 - lam) * criterion(outputs, yb)
+            else:
+                outputs = model(x)
+                loss = criterion(outputs, y)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
