@@ -28,15 +28,13 @@ def compute_typicality_per_cluster(
     cluster_ids,
     K = 20,
 ):
-    """
-    只在自己的簇里找邻居
-    """
+   #neighbours
     typicality = np.full(len(embeddings), np.nan)
     for cid in np.unique(cluster_ids):
-        # 找出属于当前簇 cid 的所有样本
+        # all samples belonging to the current cluster
         mask = cluster_ids == cid
         inds = np.where(mask)[0]
-        sub_emb = embeddings[inds]  # 只取出这个簇的 embedding
+        sub_emb = embeddings[inds]  # get embedding
         # min{20, cluster_size}；max cluster_size-1 nbrs
         k_eff = min(K, len(inds) - 1)
         if k_eff < 1: #only one sample in cluster

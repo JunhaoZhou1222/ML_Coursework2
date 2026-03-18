@@ -7,8 +7,7 @@ from .config import CIFAR10_MEAN, CIFAR10_STD
 
 
 class SimCLRTransform:
-    """为对比学习生成同一图像的两个增强视图。"""
-
+    #Data augmentation
     def __init__(self, size = 32):
         self.transform = transforms.Compose([
             transforms.RandomResizedCrop(size=size, scale=(0.2, 1.0)),

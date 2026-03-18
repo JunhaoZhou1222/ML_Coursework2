@@ -15,8 +15,6 @@ import numpy as np
 
 from typiclust import run_typiclust_rp
 from typiclust.config import DEVICE, SEED, set_seed
-# 如果你不需要 extract_embeddings，可以注释掉下面这行
-# from typiclust.embeddings import extract_embeddings
 
 # ── Parse args ──
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -54,17 +52,16 @@ BUDGET = parse_flag("--budget", BUDGET)
 ROUNDS = parse_flag("--rounds", ROUNDS)
 
 # Parse multiple seeds
-SEEDS = [SEED]  # 默认使用 config 中的单个 SEED
+SEEDS = [SEED]  # default SEED
 if "--seeds" in sys.argv:
     idx = sys.argv.index("--seeds")
     SEEDS = []
-    # 收集 --seeds 后面的所有数字，直到遇到下一个 --flag 或结束
     for val in sys.argv[idx+1:]:
         if val.startswith("--"):
             break
         SEEDS.append(int(val))
     if not SEEDS:
-        print("Error: --seeds 后面需要跟至少一个整数。")
+        print("Error: --seeds need a number")
         sys.exit(1)
 
 os.makedirs("results", exist_ok=True)
@@ -93,7 +90,6 @@ for current_seed in SEEDS:
         K_typicality=20,
     )
 
-    # ── Save ── (注意：这里已经缩进了，它在 for 循环内部！)
     output = {
         "name": f"{name}_seed{current_seed}",
         "settings": {
