@@ -6,6 +6,14 @@ This repository implements a **TypiClust-style active learning (AL)** pipeline o
 - **Sample selection (AL)**: run K-means in embedding space, find **uncovered clusters**, and query the **most typical** point per large uncovered cluster.
 - **Supervised training**: train a classifier on the growing labeled set and report **test accuracy** after each AL round.
 
+## Quick Start
+
+To run the pipeline, simply execute the following command:
+
+```bash
+python run.py
+```
+
 ## Result original vs optimized (from saved outputs)
 
 ![comparison of original and improved results](plots/final_acc_comparison_plot.png)
