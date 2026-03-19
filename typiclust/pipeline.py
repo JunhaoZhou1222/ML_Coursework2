@@ -9,8 +9,8 @@ def run_typiclust_rp(
     dataset_root = "./data",
     budget_per_round = 10,
     num_rounds = 5,
-    simclr_epochs = 50, #50 for test
-    classifier_epochs= 100,
+    simclr_epochs = 500, #50 for test
+    classifier_epochs= 300, #200 in paper
     max_clusters = 500,
     K_typicality = 20,
 ):
@@ -25,7 +25,7 @@ def run_typiclust_rp(
         epochs=simclr_epochs,
         batch_size=512,
         lr=0.4,
-        temperature=0.5, #temperature=0.5 in paper improved:temperature=0.1
+        temperature=0.1, #improved:temperature=0.1
         projection_dim=128,
     )
     # Extract embeddings

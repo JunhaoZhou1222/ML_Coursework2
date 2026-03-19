@@ -12,7 +12,7 @@ if __name__ == "__main__":
         budget_per_round=10,
         num_rounds=5,
         simclr_epochs=500,       
-        classifier_epochs=200, 
+        classifier_epochs=300, #200 in paper, 300 for better performance
         max_clusters=500,
         K_typicality=20,
     )
