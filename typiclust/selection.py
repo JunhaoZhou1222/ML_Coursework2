@@ -43,7 +43,7 @@ def typiclust_rp_select(
     cluster_ids = km.fit_predict(embeddings) #cluster_ids = [0, 2, 0, 1, 2, ...]
 
     # caclulate typicality
-    print(f"\n=== Step 3: Computing typicality (per-cluster K_eff=min({K_typicality}, cluster_size)) ===")
+    print(f"\n=== Step 3: Computing typicality (per-cluster K_effective=min({K_typicality}, cluster_size)) ===")
     typicality = compute_typicality_per_cluster(
         embeddings, cluster_ids, K=K_typicality
     )

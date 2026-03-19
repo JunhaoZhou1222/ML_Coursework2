@@ -36,12 +36,12 @@ def compute_typicality_per_cluster(
         inds = np.where(mask)[0]
         sub_emb = embeddings[inds]  # get embedding
         # min{20, cluster_size}；max cluster_size-1 nbrs
-        k_eff = min(K, len(inds) - 1)
-        if k_eff < 1: #only one sample in cluster
+        k_effective = min(K, len(inds) - 1)
+        if k_effective < 1: #only one sample in cluster
             continue
 
         nbrs = NearestNeighbors(
-            n_neighbors=k_eff + 1,
+            n_neighbors=k_effective + 1,
             algorithm="auto",
             metric="euclidean",
             n_jobs=-1,
