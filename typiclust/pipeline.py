@@ -15,9 +15,8 @@ def run_typiclust_rp(
     K_typicality = 20,
 ):
     
-    print("=" * 60)
-    print("  TPC_RP: TypiClust with SimCLR + K-means on CIFAR-10")
-    print("=" * 60)
+    print("TPC_RP: TypiClust with SimCLR + K-means on CIFAR-10")
+
     
     # self-supervised learning
     encoder = train_simclr(
