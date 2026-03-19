@@ -8,7 +8,7 @@ This repository implements a **TypiClust-style active learning (AL)** pipeline o
 
 ## Result original vs optimized (from saved outputs)
 
-![comparison of original and improved results](final_acc_comparison_plot.png)
+![comparison of original and improved results](plots/final_acc_comparison_plot.png)
 In the optimized model, not only did the accuracy rate of the first round of training increase, but its final accuracy rate was also better than that of the original one, averaging 3.7% higher.
 
 ## Improvements and Implementation
