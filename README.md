@@ -6,6 +6,11 @@ This repository implements a **TypiClust-style active learning (AL)** pipeline o
 - **Sample selection (AL)**: run K-means in embedding space, find **uncovered clusters**, and query the **most typical** point per large uncovered cluster.
 - **Supervised training**: train a classifier on the growing labeled set and report **test accuracy** after each AL round.
 
+## Result original vs optimized (from saved outputs)
+
+![comparison of original and improved results](final_acc_comparison_plot.png)
+In the optimized model, not only did the accuracy rate of the first round of training increase, but its final accuracy rate was also better than that of the original one, averaging 3.7% higher.
+
 ## Improvements and Implementation
 
 To improve the model’s robustness under low-budget conditions, this experiment introduced five key training optimizations based on the original algorithm:
