@@ -12,11 +12,11 @@ def train_simclr(
     epochs = 50, 
     batch_size = 512,
     lr = 0.4,
-    temperature = 0.5,
+    temperature = 0.1, #improve temperature to Enhanced features
     projection_dim = 128
 ):
     
-    print("\n=== Step 1: Training SimCLR Encoder ===")
+    print("\nStep 1: Training SimCLR Encoder")
     #Load data
     train_dataset = torchvision.datasets.CIFAR10(
         root=dataset_root,

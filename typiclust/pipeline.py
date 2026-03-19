@@ -34,17 +34,15 @@ def run_typiclust_rp(
         dataset_root=dataset_root,
         batch_size=512,
     )
-    print(f"  Embeddings shape: {embeddings.shape}")
+    print(f"Embeddings shape: {embeddings.shape}")
 
     #Active learning loop
     labeled_indices = []
     results = []
 
     for round_idx in range(num_rounds):
-        print(f"\n{'─' * 60}")
-        print(f"  Active Learning Round {round_idx + 1}/{num_rounds}")
-        print(f"  Current labeled set size: {len(labeled_indices)}")
-        print(f"{'─' * 60}")
+        print(f"Active Learning Round {round_idx + 1}/{num_rounds}")
+        print(f"Current labeled set size: {len(labeled_indices)}")
 
         new_queries = typiclust_rp_select(
             embeddings=embeddings,
@@ -56,14 +54,14 @@ def run_typiclust_rp(
 
         labeled_indices = labeled_indices + new_queries
         total_budget = len(labeled_indices)
-        print(f"  Newly queried  : {len(new_queries)}  |  Total labeled: {total_budget}")
+        print(f"Newly queried  : {len(new_queries)}  |  Total labeled: {total_budget}")
 
         queried_labels = true_labels[np.array(labeled_indices)]
         unique, counts = np.unique(queried_labels, return_counts=True)
         class_dist = dict(zip(unique.tolist(), counts.tolist()))
-        print(f"  Class distribution: {class_dist}")
+        print(f"Class distribution: {class_dist}")
 
-        print(f"  Training classifier on {total_budget} labeled examples ...")
+        print(f"Training classifier on {total_budget} labeled examples ...")
         acc = train_classifier(
             labeled_indices=labeled_indices,
             dataset_root=dataset_root,
@@ -78,12 +76,10 @@ def run_typiclust_rp(
         })
         print(f"Test Accuracy: {acc:.2f}%")
 
-    print("\n" + "=" * 60)
-    print("  TPC_RP Results Summary")
-    print("=" * 60)
-    print(f"  {'Round':>5}  {'Budget':>8}  {'Test Acc (%)':>12}")
-    print(f"  {'─' * 5}  {'─' * 8}  {'─' * 12}")
+    print("TPC_RP Results Summary")
+    print(f" {'Round':>5}  {'Budget':>8}  {'Test Acc (%)':>12}")
+    print(f" {'─' * 5}  {'─' * 8}  {'─' * 12}")
     for r in results:
-        print(f"  {r['round']:>5}  {r['budget']:>8}  {r['test_accuracy']:>12.2f}")
+        print(f" {r['round']:>5}  {r['budget']:>8}  {r['test_accuracy']:>12.2f}")
 
     return results, labeled_indices
