@@ -19,7 +19,7 @@ def compute_typicality(embeddings: np.ndarray, K: int = 20) -> np.ndarray:
     nbrs.fit(embeddings)
     distances, _ = nbrs.kneighbors(embeddings)
     avg_dist = distances[:, 1:].mean(axis=1)  # calculate mean of distances[:, 1:]
-    avg_dist = np.clip(avg_dist, a_min=1e-8, a_max=None)  # 防止两点完全重合
+    avg_dist = np.clip(avg_dist, a_min=1e-8, a_max=None)  # avoid overlap
     return 1.0 / avg_dist  # low mean distance means high typicality
 
 
